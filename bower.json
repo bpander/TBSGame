@@ -1,0 +1,21 @@
+{
+  "name": "game",
+  "version": "0.0.0",
+  "authors": [
+    "Bradley Anderson <banderso@nerdery.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "requirejs": "~2.1.15",
+    "html5-reset": "~2.1.2",
+    "bluebird": "~2.3.6"
+  }
+}
