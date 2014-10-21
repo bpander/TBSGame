@@ -8,6 +8,8 @@ define(function (require) {
 
         this.name = name;
 
+        this.pieces = [];
+
     }
 
 
@@ -17,7 +19,7 @@ define(function (require) {
             console.log(self.name, 'starting turn');
             setTimeout(function () {
                 console.log(self.name, 'finishing turn');
-                resolve();
+                // resolve();
             }, 1000);
         });
     };

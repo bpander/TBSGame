@@ -4,6 +4,9 @@ define(function (require) {
     var Arena = require('components/Arena');
     var Player = require('models/Player');
     var Promise = require('bluebird');
+    var Sniper = require('pieces/Sniper');
+    var Soldier = require('pieces/Soldier');
+    var Tank = require('pieces/Tank');
 
 
     function Game (element) {
@@ -14,8 +17,7 @@ define(function (require) {
 
         this.players = [
             new Player('Player One'),
-            new Player('Player Two'),
-            new Player('Player Three')
+            new Player('Player Two')
         ];
 
         this.loop = this.loop.bind(this);
@@ -24,10 +26,23 @@ define(function (require) {
     }
 
 
+    Game.pieces = [
+        Tank,
+        Sniper,
+        Soldier
+    ];
+
+
     Game.prototype.init = function () {
         this.element.appendChild(this.arena.element);
+        this.setup();
         this.loop();
         return this;
+    };
+
+
+    Game.prototype.loop = function () {
+        return this.playRound().then(this.loop);
     };
 
 
@@ -42,8 +57,12 @@ define(function (require) {
     };
 
 
-    Game.prototype.loop = function () {
-        return this.playRound().then(this.loop);
+    Game.prototype.setup = function () {
+        this.players.forEach(function (player) {
+            Game.pieces.forEach(function (Piece) {
+                player.pieces.push(new Piece());
+            });
+        }, this);
     };
 
 
