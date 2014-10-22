@@ -2,10 +2,10 @@ define(function (require) {
     'use strict';
 
 
-    function Sniper () {
+    function Scout () {
 
     }
 
 
-    return Sniper;
+    return Scout;
 });

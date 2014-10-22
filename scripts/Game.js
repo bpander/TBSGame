@@ -4,7 +4,7 @@ define(function (require) {
     var Arena = require('components/Arena');
     var Player = require('models/Player');
     var Promise = require('bluebird');
-    var Sniper = require('pieces/Sniper');
+    var Scout = require('pieces/Scout');
     var Soldier = require('pieces/Soldier');
     var Tank = require('pieces/Tank');
 
@@ -28,7 +28,7 @@ define(function (require) {
 
     Game.pieces = [
         Tank,
-        Sniper,
+        Scout,
         Soldier
     ];
 
