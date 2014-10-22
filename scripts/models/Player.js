@@ -4,9 +4,11 @@ define(function (require) {
     var Promise = require('bluebird');
 
 
-    function Player (name) {
+    function Player (name, color) {
 
         this.name = name;
+
+        this.color = color;
 
         this.pieces = [];
 

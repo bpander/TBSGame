@@ -16,8 +16,8 @@ define(function (require) {
         this.arena = new Arena();
 
         this.players = [
-            new Player('Player One'),
-            new Player('Player Two')
+            new Player('Player One', 'red'),
+            new Player('Player Two', 'blue')
         ];
 
         this.loop = this.loop.bind(this);
