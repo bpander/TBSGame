@@ -10,7 +10,7 @@ define(function (require) {
 
         this.element = document.createElement('div');
 
-        this.tiles = [];
+        this.cells = [];
 
         this.init();
     }
@@ -25,6 +25,9 @@ define(function (require) {
         this.element.classList.add('grid');
 
         for (i_col; i_col !== this.colCount; i_col++) {
+            if (this.cells[i_col] === undefined) {
+                this.cells[i_col] = [];
+            }
             row = document.createElement('div');
             row.classList.add('grid-row');
             this.element.appendChild(row);
@@ -32,10 +35,16 @@ define(function (require) {
                 cell = document.createElement('div');
                 cell.classList.add('grid-cell');
                 row.appendChild(cell);
+                this.cells[i_col][i_row] = cell;
             }
         }
 
         return this;
+    };
+
+
+    Grid.prototype.getCellAt = function (col, row) {
+        return this.cells[col][row];
     };
 
 

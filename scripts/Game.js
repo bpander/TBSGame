@@ -58,11 +58,24 @@ define(function (require) {
 
 
     Game.prototype.setup = function () {
-        this.players.forEach(function (player) {
-            Game.pieces.forEach(function (Piece) {
-                player.pieces.push(new Piece());
-            });
+        var startingPositions = this.arena.constructor.startingPositions;
+        var arenaElement = this.arena.element;
+        this.players.forEach(function (player, i) {
+            Game.pieces.forEach(function (Piece, j) {
+                var position = startingPositions[i][j];
+                var piece = new Piece();
+
+                // TODO: This needs to be more re-usable since moving pieces is one of the main parts of the game
+                var cell = this.arena.grid.getCellAt(position.col, position.row);
+                var cellBoundingRect = cell.getBoundingClientRect();
+                piece.element.style.top = (cellBoundingRect.top + cellBoundingRect.bottom) / 2 + 'px';
+                piece.element.style.left = (cellBoundingRect.left + cellBoundingRect.right) / 2 + 'px';
+                piece.setColor(player.color);
+                this.arena.element.appendChild(piece.element);
+                player.pieces.push(piece);
+            }, this);
         }, this);
+        return this;
     };
 
 
