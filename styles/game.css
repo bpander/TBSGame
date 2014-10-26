@@ -29,13 +29,36 @@ body {
 }
 
 .grid-cell:after {
-    content: '';
     border: 1px solid #999999;
     border-radius: 3px;
+    content: '';
     display: block;
     height: 50px;
     margin: 3px;
+    transition: all 400ms ease-out;
     width: 50px;
+}
+
+
+@-webkit-keyframes pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 3px 1px turquoise;
+        border-color: #999999;
+    }
+
+    50% {
+        box-shadow: 0 0 15px 1px turquoise;
+        border-color: turquoise;
+    }
+}
+
+.grid-cell_activePiece:after {
+    -webkit-animation-name: pulse;
+    -webkit-animation-duration: 1500ms;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: ease-in-out;
 }
 
 
