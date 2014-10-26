@@ -43,8 +43,8 @@ define(function (require) {
     };
 
 
-    Grid.prototype.getCellAt = function (col, row) {
-        return this.cells[col][row];
+    Grid.prototype.getCellAt = function (position) {
+        return this.cells[position.col][position.row];
     };
 
 
