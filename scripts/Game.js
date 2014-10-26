@@ -47,12 +47,37 @@ define(function (require) {
 
 
     Game.prototype.playRound = function () {
+        var self = this;
         var current = Promise.resolve();
         return Promise.map(this.players, function (player) {
             current = current.then(function () {
-                return player.playTurn();
+                return self.playTurn(player);
             });
             return current;
+        });
+    };
+
+
+    Game.prototype.playTurn = function (player) {
+        var self = this;
+        var current = Promise.resolve();
+        return Promise.map(player.pieces, function (piece) {
+            current = current.then(function () {
+                return self.playPiece(piece);
+            });
+            return current;
+        });
+    };
+
+
+    Game.prototype.playPiece = function (piece) {
+        var cell = this.board.grid.getCellAt(piece.position);
+        cell.classList.add('grid-cell_activePiece');
+        return new Promise(function (resolve) {
+            setTimeout(function () {
+                cell.classList.remove('grid-cell_activePiece');
+                resolve();
+            }, 2000);
         });
     };
 
@@ -64,14 +89,10 @@ define(function (require) {
             Game.pieces.forEach(function (Piece, j) {
                 var position = startingPositions[i][j];
                 var piece = new Piece();
-
-                // TODO: This needs to be more re-usable since moving pieces is one of the main parts of the game
-                var cell = this.arena.grid.getCellAt(position.col, position.row);
-                var cellBoundingRect = cell.getBoundingClientRect();
-                piece.element.style.top = (cellBoundingRect.top + cellBoundingRect.bottom) / 2 + 'px';
-                piece.element.style.left = (cellBoundingRect.left + cellBoundingRect.right) / 2 + 'px';
                 piece.setColor(player.color);
-                this.arena.element.appendChild(piece.element);
+                piece.setBoard(this.board);
+                piece.setPosition(position);
+
                 player.pieces.push(piece);
             }, this);
         }, this);
