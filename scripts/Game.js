@@ -1,7 +1,7 @@
 define(function (require) {
     'use strict';
 
-    var Arena = require('components/Arena');
+    var Board = require('components/Board');
     var Player = require('models/Player');
     var Promise = require('bluebird');
     var Scout = require('pieces/Scout');
@@ -13,7 +13,7 @@ define(function (require) {
 
         this.element = element;
 
-        this.arena = new Arena();
+        this.board = new Board();
 
         this.players = [
             new Player('Player One', 'red'),
@@ -34,7 +34,7 @@ define(function (require) {
 
 
     Game.prototype.init = function () {
-        this.element.appendChild(this.arena.element);
+        this.element.appendChild(this.board.element);
         this.setup();
         this.loop();
         return this;
@@ -58,8 +58,8 @@ define(function (require) {
 
 
     Game.prototype.setup = function () {
-        var startingPositions = this.arena.constructor.startingPositions;
-        var arenaElement = this.arena.element;
+        var startingPositions = this.board.constructor.startingPositions;
+        var boardElement = this.board.element;
         this.players.forEach(function (player, i) {
             Game.pieces.forEach(function (Piece, j) {
                 var position = startingPositions[i][j];

@@ -8,7 +8,7 @@ body {
     background: #000000;
 }
 
-.arena {
+.board {
     border: solid 5px #333333;
     display: inline-block;
     margin: 10px;
