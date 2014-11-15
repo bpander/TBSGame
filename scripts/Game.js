@@ -7,6 +7,7 @@ define(function (require) {
     var Scout = require('pieces/Scout');
     var Soldier = require('pieces/Soldier');
     var Tank = require('pieces/Tank');
+    var UI = require('components/UI');
 
 
     function Game (element) {
@@ -19,6 +20,8 @@ define(function (require) {
             new Player('Player One', 'red'),
             new Player('Player Two', 'blue')
         ];
+
+        this.ui = new UI();
 
         this.loop = this.loop.bind(this);
 
@@ -35,6 +38,11 @@ define(function (require) {
 
     Game.prototype.init = function () {
         this.element.appendChild(this.board.element);
+        this.element.appendChild(this.ui.element);
+
+        // TODO: There's probably a better way to do this (putting padding below the grid to push the fixed UI down)
+        this.element.style.paddingBottom = this.ui.element.getBoundingClientRect().height + 'px';
+
         this.setup();
         this.loop();
         return this;
@@ -73,6 +81,7 @@ define(function (require) {
     Game.prototype.playPiece = function (piece) {
         var cell = this.board.grid.getCellAt(piece.position);
         cell.classList.add('grid-cell_activePiece');
+        piece.ready();
         return new Promise(function (resolve) {
             setTimeout(function () {
                 cell.classList.remove('grid-cell_activePiece');

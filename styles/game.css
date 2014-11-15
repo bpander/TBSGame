@@ -1,12 +1,20 @@
 /* # Base Styles */
-html,
-body {
-    height: 100%;
-}
-
 body {
     background: #000000;
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
 }
+
+button,
+input {
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+}
+
 
 .board {
     border: solid 5px #333333;
@@ -64,6 +72,7 @@ body {
 
 .piece {
     position: absolute;
+    -webkit-transform: translateY(-50%) translateX(-50%);
     transform: translateY(-50%) translateX(-50%);
 }
 
@@ -83,3 +92,29 @@ body {
     border-top-width: 0;
     border-bottom-width: 20px;
 }
+
+.ui {
+    background: rgba(255, 255, 255, 0.75);
+    bottom: 0;
+    display: table;
+    position: fixed;
+    width: 100%;
+}
+
+.ui-control {
+    display: table-cell;
+    padding: 10px;
+    vertical-align: middle;
+}
+
+.ui-control-button {
+    padding: 10px;
+}
+
+.ui-control-value {
+    font-size: 24px;
+}
+
+.mix-ui-control_left { text-align: left; }
+.mix-ui-control_center { text-align: center; }
+.mix-ui-control_right { text-align: right; }
