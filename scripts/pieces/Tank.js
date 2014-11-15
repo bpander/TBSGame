@@ -7,6 +7,14 @@ define(function (require) {
     function Tank () {
         Piece.call(this);
 
+        this.damage = 5;
+
+        this.hitPoints = 30;
+
+        this.range = 8;
+
+        this.startingActionPoints = 5;
+
     }
     Tank.prototype = Object.create(Piece.prototype);
     Tank.prototype.constructor = Tank;

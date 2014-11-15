@@ -7,6 +7,14 @@ define(function (require) {
     function Scout () {
         Piece.call(this);
 
+        this.damage = 5;
+
+        this.hitPoints = 10;
+
+        this.range = 15;
+
+        this.startingActionPoints = 10;
+
     }
     Scout.prototype = Object.create(Piece.prototype);
     Scout.prototype.constructor = Scout;

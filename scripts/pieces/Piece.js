@@ -4,17 +4,21 @@ define(function (require) {
 
     function Piece () {
 
-        this.element = document.createElement('div');
-
-        this.startingActionPoints = 0;
-
-        this.hitPoints = 0;
-
-        this.range = 0;
+        this.actionPoints = 0;
 
         this.board = null;
 
+        this.damage = 0;
+
+        this.element = document.createElement('div');
+
+        this.hitPoints = 0;
+
         this.position = null;
+
+        this.range = 0;
+
+        this.startingActionPoints = 0;
 
         this.init();
     }
@@ -22,6 +26,12 @@ define(function (require) {
 
     Piece.prototype.init = function () {
         this.element.classList.add('piece');
+        return this;
+    };
+
+
+    Piece.prototype.ready = function () {
+        this.actionPoints = this.startingActionPoints;
         return this;
     };
 

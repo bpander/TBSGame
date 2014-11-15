@@ -7,6 +7,14 @@ define(function (require) {
     function Soldier () {
         Piece.call(this);
 
+        this.damage = 5;
+
+        this.hitPoints = 20;
+
+        this.range = 10;
+
+        this.startingActionPoints = 8;
+
     }
     Soldier.prototype = Object.create(Piece.prototype);
     Soldier.prototype.constructor = Soldier;
