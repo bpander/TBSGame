@@ -1,6 +1,8 @@
 define(function (require) {
     'use strict';
 
+    var Cell = require('components/Cell');
+
 
     function Piece () {
 
@@ -14,7 +16,7 @@ define(function (require) {
 
         this.hitPoints = 0;
 
-        this.position = null;
+        this.cell = null;
 
         this.range = 0;
 
@@ -51,10 +53,13 @@ define(function (require) {
     };
 
 
-    Piece.prototype.setPosition = function (position) {
-        var cell = this.board.grid.getCellAt(position);
-        var cellBoundingRect = cell.getBoundingClientRect();
-        this.position = position;
+    Piece.prototype.setCell = function (cell) {
+        var cellBoundingRect = cell.element.getBoundingClientRect();
+        if (this.cell instanceof Cell) {
+            this.cell.isOpen = true;
+        }
+        this.cell = cell;
+        this.cell.isOpen = false;
         this.element.style.top = (cellBoundingRect.top + cellBoundingRect.bottom) / 2 + 'px';
         this.element.style.left = (cellBoundingRect.left + cellBoundingRect.right) / 2 + 'px';
         return this;

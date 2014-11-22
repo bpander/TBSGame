@@ -2,6 +2,7 @@ define(function (require) {
     'use strict';
 
     var Board = require('components/Board');
+    var Cell = require('components/Cell');
     var Player = require('models/Player');
     var Promise = require('bluebird');
     var Scout = require('pieces/Scout');
@@ -79,12 +80,13 @@ define(function (require) {
 
 
     Game.prototype.playPiece = function (piece) {
-        var cell = this.board.grid.getCellAt(piece.position);
-        cell.classList.add('grid-cell_activePiece');
+        piece.cell.element.classList.add('grid-cell_activePiece');
         piece.ready();
+        this.ui.apReadout.setValue(piece.actionPoints);
+        this.highlightWalkableArea(piece);
         return new Promise(function (resolve) {
             setTimeout(function () {
-                cell.classList.remove('grid-cell_activePiece');
+                piece.cell.element.classList.remove('grid-cell_activePiece');
                 resolve();
             }, 2000);
         });
@@ -100,7 +102,7 @@ define(function (require) {
                 var piece = new Piece();
                 piece.setColor(player.color);
                 piece.setBoard(this.board);
-                piece.setPosition(position);
+                piece.setCell(this.board.grid.getCellAt(position));
 
                 player.pieces.push(piece);
             }, this);
