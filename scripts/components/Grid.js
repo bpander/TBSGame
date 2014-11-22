@@ -51,5 +51,38 @@ define(function (require) {
     };
 
 
+    Grid.prototype.getAdjacentOpenUntestedCells = function (cell) {
+        var adjacentOpenUntestedCells = [];
+        var i;
+        var j;
+        var col;
+        var row;
+        var cellPotential;
+        for (i = -1; i <= 1; i++) {
+            for (j = -1; j <= 1; j++) {
+                if (i === 0 && j === 0) {
+                    continue;
+                }
+                row = cell.position.row + i;
+                if (row < 0) {
+                    continue;
+                }
+                col = cell.position.col + j;
+                if (col < 0) {
+                    continue;
+                }
+                cellPotential = this.getCellAt(new Position(row, col));
+                if (!cellPotential.isTested) {
+                    cellPotential.isTested = true;
+                    if (cellPotential.isOpen) {
+                        adjacentOpenUntestedCells.push(cellPotential);
+                    }
+                }
+            }
+        }
+        return adjacentOpenUntestedCells;
+    };
+
+
     return Grid;
 });

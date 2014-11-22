@@ -93,6 +93,25 @@ define(function (require) {
     };
 
 
+    Game.prototype.highlightWalkableArea = function (piece) {
+        var i_move = 0;
+        var i_cell = 0;
+        var cell;
+        var moveCount = piece.actionPoints;
+        var frontierCells = [ piece.cell ];
+        var frontierCellsNew;
+        for (; i_move !== moveCount; i_move++) {
+            frontierCellsNew = [];
+            i_cell = 0;
+            while ((cell = frontierCells[i_cell++]) !== undefined) {
+                frontierCellsNew = frontierCellsNew.concat(this.board.grid.getAdjacentOpenUntestedCells(cell));
+            }
+            frontierCells = frontierCellsNew;
+        }
+        return this;
+    };
+
+
     Game.prototype.setup = function () {
         var startingPositions = this.board.constructor.startingPositions;
         var boardElement = this.board.element;
