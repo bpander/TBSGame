@@ -13,6 +13,8 @@ define(function (require) {
 
         this.range = 8;
 
+        this.shotCost = 3;
+
         this.startingActionPoints = 5;
 
     }
