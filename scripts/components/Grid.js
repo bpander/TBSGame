@@ -64,11 +64,11 @@ define(function (require) {
                     continue;
                 }
                 row = cell.position.row + i;
-                if (row < 0) {
+                if (row < 0 || row >= this.rowCount) {
                     continue;
                 }
                 col = cell.position.col + j;
-                if (col < 0) {
+                if (col < 0 || col >= this.colCount) {
                     continue;
                 }
                 cellPotential = this.getCellAt(new Position(row, col));
