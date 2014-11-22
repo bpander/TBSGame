@@ -1,6 +1,9 @@
 define(function (require) {
     'use strict';
 
+    var Cell = require('components/Cell');
+    var Position = require('models/Position');
+
 
     function Grid (rowCount, colCount) {
 
@@ -17,25 +20,25 @@ define(function (require) {
 
 
     Grid.prototype.init = function () {
-        var i_row = 0;
         var i_col = 0;
+        var i_row = 0;
         var row;
         var cell;
 
         this.element.classList.add('grid');
 
-        for (i_col; i_col !== this.colCount; i_col++) {
-            if (this.cells[i_col] === undefined) {
-                this.cells[i_col] = [];
+        for (i_row; i_row !== this.colCount; i_row++) {
+            if (this.cells[i_row] === undefined) {
+                this.cells[i_row] = [];
             }
             row = document.createElement('div');
             row.classList.add('grid-row');
             this.element.appendChild(row);
-            for (i_row = 0; i_row !== this.rowCount; i_row++) {
-                cell = document.createElement('div');
-                cell.classList.add('grid-cell');
-                row.appendChild(cell);
-                this.cells[i_col][i_row] = cell;
+            for (i_col = 0; i_col !== this.rowCount; i_col++) {
+                cell = new Cell();
+                cell.position = new Position(i_row, i_col);
+                row.appendChild(cell.element);
+                this.cells[i_row][i_col] = cell;
             }
         }
 
@@ -44,7 +47,7 @@ define(function (require) {
 
 
     Grid.prototype.getCellAt = function (position) {
-        return this.cells[position.col][position.row];
+        return this.cells[position.row][position.col];
     };
 
 

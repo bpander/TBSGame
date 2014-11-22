@@ -2,11 +2,11 @@ define(function (require) {
     'use strict';
 
 
-    function Position (col, row) {
-
-        this.col = col;
+    function Position (row, col) {
 
         this.row = row;
+
+        this.col = col;
 
     }
 
