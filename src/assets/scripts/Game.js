@@ -4,6 +4,7 @@ define(function (require) {
     var Board = require('components/Board');
     var Cell = require('components/Cell');
     var Player = require('models/Player');
+    var Piece = require('pieces/Piece');
     var Promise = require('bluebird');
     var Scout = require('pieces/Scout');
     var Soldier = require('pieces/Soldier');
@@ -14,6 +15,8 @@ define(function (require) {
     function Game (element) {
 
         this.element = element;
+
+        this.activePiece = null;
 
         this.board = new Board();
 
@@ -80,15 +83,16 @@ define(function (require) {
 
 
     Game.prototype.playPiece = function (piece) {
-        piece.cell.element.classList.add('grid-cell_activePiece');
+        if (this.activePiece instanceof Piece) {
+            this.activePiece.cell.deactivate();
+        }
+        this.activePiece = piece;
+        piece.cell.activate();
         piece.ready();
         this.ui.apReadout.setValue(piece.actionPoints);
         this.highlightWalkableArea(piece);
         return new Promise(function (resolve) {
-            setTimeout(function () {
-                piece.cell.element.classList.remove('grid-cell_activePiece');
-                resolve();
-            }, 2000);
+            // piece.once(Piece.EVENT_NAME.FINISH, resolve); // TODO: Implement "once" method
         });
     };
 

@@ -17,6 +17,7 @@ define(function (require) {
 
 
     Cell.CLASS_NAME = {
+        ACTIVE:     'grid-cell_activePiece',
         ELEMENT:    'grid-cell',
         SHOOTABLE:  'grid-cell_shootable',
         WALKABLE:   'grid-cell_walkable'
@@ -25,6 +26,18 @@ define(function (require) {
 
     Cell.prototype.init = function () {
         this.element.classList.add(Cell.CLASS_NAME.ELEMENT);
+        return this;
+    };
+
+
+    Cell.prototype.activate = function () {
+        this.element.classList.add(Cell.CLASS_NAME.ACTIVE);
+        return this;
+    };
+
+
+    Cell.prototype.deactivate = function () {
+        this.element.classList.remove(Cell.CLASS_NAME.ACTIVE);
         return this;
     };
 
