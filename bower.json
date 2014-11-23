@@ -4,7 +4,9 @@
   "private": true,
   "dependencies": {
     "requirejs": "2.1.9",
-    "bluebird": "~2.3.11"
+    "bluebird": "~2.3.11",
+    "jquery": "~2.1.1",
+    "velocity": "~1.1.0"
   },
   "devDependencies": {}
 }
