@@ -3,7 +3,8 @@ require.config({
         bluebird: '../vendor/bluebird/js/browser/bluebird',
         jquery: '../vendor/jquery/dist/jquery',
         requirejs: '../vendor/requirejs/require',
-        velocity: '../vendor/velocity/velocity'
+        velocity: '../vendor/velocity/velocity',
+        EventEmitter: '../vendor/EventEmitter.js/EventEmitter'
     },
     shim: {
         velocity: {
