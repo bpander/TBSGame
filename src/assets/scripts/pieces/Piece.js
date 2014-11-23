@@ -54,14 +54,14 @@ define(function (require) {
 
 
     Piece.prototype.setCell = function (cell) {
-        var cellBoundingRect = cell.element.getBoundingClientRect();
+        var cellCenterPoint = cell.getCenterPoint();
         if (this.cell instanceof Cell) {
             this.cell.isOpen = true;
         }
         this.cell = cell;
         this.cell.isOpen = false;
-        this.element.style.top = (cellBoundingRect.top + cellBoundingRect.bottom) / 2 + 'px';
-        this.element.style.left = (cellBoundingRect.left + cellBoundingRect.right) / 2 + 'px';
+        this.element.style.top = cellCenterPoint.top + 'px';
+        this.element.style.left = cellCenterPoint.left + 'px';
         return this;
     };
 
