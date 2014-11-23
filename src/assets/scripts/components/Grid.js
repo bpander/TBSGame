@@ -84,5 +84,25 @@ define(function (require) {
     };
 
 
+    /**
+     * Loops through all the cells and marks them all as untested and removes the walkable and shootable classes
+     * @return {Grid}
+     */
+    Grid.prototype.reset = function () {
+        var cell;
+        var i_col = 0;
+        var i_row = 0;
+        for (; i_row !== this.rowCount; i_row++) {
+            for (i_col = 0; i_col !== this.colCount; i_col++) {
+                cell = this.cells[i_row][i_col];
+                cell.isTested = false;
+                cell.element.classList.remove(Cell.CLASS_NAME.WALKABLE);
+                cell.element.classList.remove(Cell.CLASS_NAME.SHOOTABLE);
+            }
+        }
+        return this;
+    };
+
+
     return Grid;
 });

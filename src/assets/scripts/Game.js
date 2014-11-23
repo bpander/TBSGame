@@ -98,16 +98,32 @@ define(function (require) {
         var i_cell = 0;
         var cell;
         var moveCount = piece.actionPoints;
+        var numberOfStepsTakenWhereShootingIsStillPossible = piece.actionPoints - piece.shotCost;
         var frontierCells = [ piece.cell ];
         var frontierCellsNew;
+        var steps = [];
+
+        this.board.grid.reset();
+
         for (; i_move !== moveCount; i_move++) {
             frontierCellsNew = [];
             i_cell = 0;
             while ((cell = frontierCells[i_cell++]) !== undefined) {
                 frontierCellsNew = frontierCellsNew.concat(this.board.grid.getAdjacentOpenUntestedCells(cell));
             }
+            steps.push(frontierCellsNew);
             frontierCells = frontierCellsNew;
         }
+
+        steps.forEach(function (cells, i) {
+            var className = i < numberOfStepsTakenWhereShootingIsStillPossible ? Cell.CLASS_NAME.SHOOTABLE : Cell.CLASS_NAME.WALKABLE;
+            setTimeout(function () {
+                cells.forEach(function (cell) {
+                    cell.element.classList.add(className);
+                });
+            }, 50 * i);
+        });
+
         return this;
     };
 

@@ -16,8 +16,15 @@ define(function (require) {
     }
 
 
+    Cell.CLASS_NAME = {
+        ELEMENT:    'grid-cell',
+        SHOOTABLE:  'grid-cell_shootable',
+        WALKABLE:   'grid-cell_walkable'
+    };
+
+
     Cell.prototype.init = function () {
-        this.element.classList.add('grid-cell');
+        this.element.classList.add(Cell.CLASS_NAME.ELEMENT);
         return this;
     };
 
