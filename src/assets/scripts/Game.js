@@ -29,6 +29,8 @@ define(function (require) {
 
         this.loop = this.loop.bind(this);
 
+        this._onUISkipRequest = Game._onUISkipRequest.bind(this);
+
         this.init();
     }
 
@@ -38,6 +40,11 @@ define(function (require) {
         Scout,
         Soldier
     ];
+
+
+    Game._onUISkipRequest = function () {
+        this.activePiece.trigger(Piece.EVENT_NAME.FINISH);
+    };
 
 
     Game._onMoveToRequest = function (e) {
@@ -65,8 +72,15 @@ define(function (require) {
         // TODO: There's probably a better way to do this (putting padding below the grid to push the fixed UI down)
         this.element.style.paddingBottom = this.ui.element.getBoundingClientRect().height + 'px';
 
+        this.enable();
         this.setup();
         this.loop();
+        return this;
+    };
+
+
+    Game.prototype.enable = function () {
+        this.ui.on(UI.EVENT_NAME.SKIP_REQUEST, this._onUISkipRequest);
         return this;
     };
 
@@ -110,7 +124,7 @@ define(function (require) {
         this.ui.apReadout.setValue(piece.actionPoints);
         this.highlightWalkableArea(piece);
         return new Promise(function (resolve) {
-            // piece.once(Piece.EVENT_NAME.FINISH, resolve); // TODO: Implement "once" method
+            piece.once(Piece.EVENT_NAME.FINISH, resolve);
         });
     };
 

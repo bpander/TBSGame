@@ -4,9 +4,11 @@ define(function (require) {
     require('velocity');
     var $ = require('jquery');
     var Cell = require('components/Cell');
+    var EventEmitter = require('EventEmitter');
 
 
     function Piece () {
+        EventEmitter.call(this);
 
         this.actionPoints = 0;
 
@@ -28,6 +30,8 @@ define(function (require) {
 
         this.init();
     }
+    Piece.prototype = Object.create(EventEmitter.prototype);
+    Piece.prototype.constructor = Piece;
 
 
     Piece.EVENT_NAME = {
