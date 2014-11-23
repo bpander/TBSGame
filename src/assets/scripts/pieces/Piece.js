@@ -1,6 +1,8 @@
 define(function (require) {
     'use strict';
 
+    require('velocity');
+    var $ = require('jquery');
     var Cell = require('components/Cell');
 
 
@@ -26,6 +28,11 @@ define(function (require) {
 
         this.init();
     }
+
+
+    Piece.EVENT_NAME = {
+        FINISH: 'piece:finish'
+    };
 
 
     Piece.prototype.init = function () {
@@ -63,6 +70,15 @@ define(function (require) {
         this.element.style.top = cellCenterPoint.top + 'px';
         this.element.style.left = cellCenterPoint.left + 'px';
         return this;
+    };
+
+
+    Piece.prototype.moveTo = function (cell) {
+        var cellCenterPoint = cell.getCenterPoint();
+        return new Promise(function (resolve) {
+            // + Animate the Piece to the cell here (most likely with velocity)
+            // TODO: Eventually this will need A* pathfinding
+        });
     };
 
 

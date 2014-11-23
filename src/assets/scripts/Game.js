@@ -40,6 +40,24 @@ define(function (require) {
     ];
 
 
+    Game._onMoveToRequest = function (e) {
+        var cell = e.target;
+        var piece = this.activePiece;
+        piece.cell.deactivate();
+        // + Make everything "unwalkable"
+        piece.moveTo(cell).then(function() {
+            // + If points left, activate cell and highlightWalkableArea
+            // + Else, trigger "finished"
+        });
+    };
+
+
+    Game._onActionPointChange = function (e) {
+        var piece = e.target;
+        // + Update UI controls (guard and readout)
+    };
+
+
     Game.prototype.init = function () {
         this.element.appendChild(this.board.element);
         this.element.appendChild(this.ui.element);
