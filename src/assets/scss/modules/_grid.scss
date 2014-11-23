@@ -1,0 +1,31 @@
+
+.grid {
+    display: table;
+    margin: -3px;
+}
+
+.grid-row {
+    display: table-row;
+}
+
+.grid-cell {
+    display: table-cell;
+}
+
+.grid-cell:after {
+    border: 1px solid #999999;
+    border-radius: 3px;
+    content: '';
+    display: block;
+    height: 50px;
+    margin: 3px;
+    transition: all 400ms ease-out;
+    width: 50px;
+}
+
+.grid-cell_activePiece:after {
+    -webkit-animation-name: pulse;
+    -webkit-animation-duration: 1500ms;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: ease-in-out;
+}

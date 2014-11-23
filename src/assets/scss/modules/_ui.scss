@@ -1,0 +1,26 @@
+
+.ui {
+    background: rgba(255, 255, 255, 0.75);
+    bottom: 0;
+    display: table;
+    position: fixed;
+    width: 100%;
+}
+
+.ui-control {
+    display: table-cell;
+    padding: 10px;
+    vertical-align: middle;
+}
+
+.ui-control-button {
+    padding: 10px;
+}
+
+.ui-control-value {
+    font-size: 24px;
+}
+
+.mix-ui-control_left { text-align: left; }
+.mix-ui-control_center { text-align: center; }
+.mix-ui-control_right { text-align: right; }

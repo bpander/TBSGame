@@ -1,0 +1,23 @@
+
+.piece {
+    position: absolute;
+    -webkit-transform: translateY(-50%) translateX(-50%);
+    transform: translateY(-50%) translateX(-50%);
+}
+
+.piece_soldier {
+    border-radius: 50%;
+    height: 20px;
+    width: 20px;
+}
+
+.piece_tank {
+    height: 20px;
+    width: 20px;
+}
+
+.piece_scout {
+    border: solid 12px transparent;
+    border-top-width: 0;
+    border-bottom-width: 20px;
+}

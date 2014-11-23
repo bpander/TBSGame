@@ -1,0 +1,14 @@
+
+@-webkit-keyframes pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 3px 1px turquoise;
+        border-color: #999999;
+    }
+
+    50% {
+        box-shadow: 0 0 15px 1px turquoise;
+        border-color: turquoise;
+    }
+}

@@ -1,7 +1,13 @@
 /* ---------------------------------------------------------------------
  Modern Styles
 ------------------------------------------------------------------------ */
+@import "helpers/_vars.scss";
+@import "helpers/_animations.scss";
+
 @import "base/_reset";
 @import "base/_elements";
 
-@import "unsorted/_unsorted";
+@import "modules/_board";
+@import "modules/_grid";
+@import "modules/_piece";
+@import "modules/_ui";
