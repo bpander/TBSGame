@@ -181,7 +181,7 @@ define(function (require) {
                 var piece = new Piece();
                 piece.setColor(player.color);
                 piece.setBoard(this.board);
-                piece.setCell(this.board.grid.getCellAt(position));
+                piece.moveTo(this.board.grid.getCellAt(position));
 
                 player.pieces.push(piece);
             }, this);

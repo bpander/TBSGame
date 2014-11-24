@@ -67,14 +67,11 @@ define(function (require) {
 
 
     Piece.prototype.setCell = function (cell) {
-        var cellCenterPoint = cell.getCenterPoint();
         if (this.cell instanceof Cell) {
             this.cell.isOpen = true;
         }
         this.cell = cell;
         this.cell.isOpen = false;
-        this.element.style.top = cellCenterPoint.top + 'px';
-        this.element.style.left = cellCenterPoint.left + 'px';
         return this;
     };
 
@@ -82,6 +79,7 @@ define(function (require) {
     Piece.prototype.moveTo = function (cell) {
         var self = this;
         var cellCenterPoint = cell.getCenterPoint();
+        this.setCell(cell);
         return new Promise(function (resolve) {
             // TODO: Eventually this will need A* pathfinding
             $.when(self.$element.velocity({
