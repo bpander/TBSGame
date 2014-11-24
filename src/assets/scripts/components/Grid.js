@@ -104,5 +104,13 @@ define(function (require) {
     };
 
 
+    Grid.prototype.getPathBetween = function (cellStart, cellFinal) {
+        // http://www.policyalmanac.org/games/aStarTutorial.htm
+        // G = Distance traveled to get to this node (moving diagonal = 14, moving straight = 10)
+        // H = Manhattan distance to goal node: (rows away + columns away) * 10
+        // F = G + H
+    };
+
+
     return Grid;
 });
