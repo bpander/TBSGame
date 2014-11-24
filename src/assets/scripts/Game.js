@@ -30,6 +30,7 @@ define(function (require) {
         this.loop = this.loop.bind(this);
 
         this._onUISkipRequest = Game._onUISkipRequest.bind(this);
+        this._onMoveToRequest = Game._onMoveToRequest.bind(this);
 
         this.init();
     }
@@ -47,12 +48,12 @@ define(function (require) {
     };
 
 
-    Game._onMoveToRequest = function (e) {
-        var cell = e.target;
+    Game._onMoveToRequest = function (cell) {
         var piece = this.activePiece;
         piece.cell.deactivate();
-        // + Make everything "unwalkable"
+        this.board.grid.reset();
         piece.moveTo(cell).then(function() {
+            cell.activate();
             // + If points left, activate cell and highlightWalkableArea
             // + Else, trigger "finished"
         });
@@ -69,18 +70,22 @@ define(function (require) {
         this.element.appendChild(this.board.element);
         this.element.appendChild(this.ui.element);
 
-        // TODO: There's probably a better way to do this (putting padding below the grid to push the fixed UI down)
+        // TODO: There's probably a better way to do this (putting padding below the grid to allow space for the fixed UI)
         this.element.style.paddingBottom = this.ui.element.getBoundingClientRect().height + 'px';
 
         this.enable();
         this.setup();
         this.loop();
+
         return this;
     };
 
 
     Game.prototype.enable = function () {
         this.ui.on(UI.EVENT_NAME.SKIP_REQUEST, this._onUISkipRequest);
+        this.board.grid.cellsFlattened.forEach(function (cell) {
+            cell.on(Cell.EVENT_NAME.MOVE_TO_REQUEST, this._onMoveToRequest);
+        }, this);
         return this;
     };
 
@@ -152,10 +157,13 @@ define(function (require) {
         }
 
         steps.forEach(function (cells, i) {
-            var className = i < numberOfStepsTakenWhereShootingIsStillPossible ? Cell.CLASS_NAME.SHOOTABLE : Cell.CLASS_NAME.WALKABLE;
+            var isShootable = i < numberOfStepsTakenWhereShootingIsStillPossible;
             setTimeout(function () {
                 cells.forEach(function (cell) {
-                    cell.element.classList.add(className);
+                    cell.makeWalkable();
+                    if (isShootable) {
+                        cell.makeShootable();
+                    }
                 });
             }, 50 * i);
         });

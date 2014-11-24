@@ -35,7 +35,6 @@
     border-color: rgba(240, 240, 95, 0.8);
 }
 
-.grid-cell_shootable:after {
-    transition-timing-function: $EASE_OUT_BACK;
+.mix-grid-cell_shootable:after {
     border-color: rgba(95, 240, 95, 0.8);
 }

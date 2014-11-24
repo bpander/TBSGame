@@ -18,6 +18,8 @@ define(function (require) {
 
         this.element = document.createElement('div');
 
+        this.$element = $(this.element);
+
         this.hitPoints = 0;
 
         this.cell = null;
@@ -78,10 +80,18 @@ define(function (require) {
 
 
     Piece.prototype.moveTo = function (cell) {
+        var self = this;
         var cellCenterPoint = cell.getCenterPoint();
         return new Promise(function (resolve) {
-            // + Animate the Piece to the cell here (most likely with velocity)
             // TODO: Eventually this will need A* pathfinding
+            $.when(self.$element.velocity({
+                top: cellCenterPoint.top,
+                left: cellCenterPoint.left,
+
+                // Velocity zeroes these out (probably for hardware acceleration) which causes the pieces to jump when animated. This forces the pieces to stay vertically and horizontally centered.
+                translateX: '-50%',
+                translateY: '-50%'
+            })).then(resolve);
         });
     };
 

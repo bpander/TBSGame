@@ -1,8 +1,11 @@
 define(function (require) {
     'use strict';
 
+    var EventEmitter = require('EventEmitter');
+
 
     function Cell () {
+        EventEmitter.call(this);
 
         this.element = document.createElement('div');
 
@@ -12,20 +15,36 @@ define(function (require) {
 
         this.position = null;
 
+        this._onClick = Cell._onClick.bind(this);
+
         this.init();
     }
+    Cell.prototype = Object.create(EventEmitter.prototype);
+    Cell.prototype.constructor = Cell;
 
 
     Cell.CLASS_NAME = {
         ACTIVE:     'grid-cell_activePiece',
         ELEMENT:    'grid-cell',
-        SHOOTABLE:  'grid-cell_shootable',
+        SHOOTABLE:  'mix-grid-cell_shootable',
         WALKABLE:   'grid-cell_walkable'
+    };
+
+    Cell.EVENT_NAME = {
+        MOVE_TO_REQUEST: 'cell:moveToRequest'
+    };
+
+
+    Cell._onClick = function (e) {
+        if (this.element.classList.contains(Cell.CLASS_NAME.WALKABLE)) {
+            this.trigger(Cell.EVENT_NAME.MOVE_TO_REQUEST, [ this ]);
+        }
     };
 
 
     Cell.prototype.init = function () {
         this.element.classList.add(Cell.CLASS_NAME.ELEMENT);
+        this.element.addEventListener('click', this._onClick);
         return this;
     };
 
@@ -38,6 +57,18 @@ define(function (require) {
 
     Cell.prototype.deactivate = function () {
         this.element.classList.remove(Cell.CLASS_NAME.ACTIVE);
+        return this;
+    };
+
+
+    Cell.prototype.makeWalkable = function () {
+        this.element.classList.add(Cell.CLASS_NAME.WALKABLE);
+        return this;
+    };
+
+
+    Cell.prototype.makeShootable = function () {
+        this.element.classList.add(Cell.CLASS_NAME.SHOOTABLE);
         return this;
     };
 

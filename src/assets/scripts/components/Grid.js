@@ -15,6 +15,8 @@ define(function (require) {
 
         this.cells = [];
 
+        this.cellsFlattened = [];
+
         this.init();
     }
 
@@ -39,6 +41,7 @@ define(function (require) {
                 cell.position = new Position(i_row, i_col);
                 row.appendChild(cell.element);
                 this.cells[i_row][i_col] = cell;
+                this.cellsFlattened.push(cell);
             }
         }
 
@@ -90,15 +93,12 @@ define(function (require) {
      */
     Grid.prototype.reset = function () {
         var cell;
-        var i_col = 0;
-        var i_row = 0;
-        for (; i_row !== this.rowCount; i_row++) {
-            for (i_col = 0; i_col !== this.colCount; i_col++) {
-                cell = this.cells[i_row][i_col];
-                cell.isTested = false;
-                cell.element.classList.remove(Cell.CLASS_NAME.WALKABLE);
-                cell.element.classList.remove(Cell.CLASS_NAME.SHOOTABLE);
-            }
+        var cellsFlattened = this.cellsFlattened;
+        var i = 0;
+        while ((cell = cellsFlattened[i++]) !== undefined) {
+            cell.isTested = false;
+            cell.element.classList.remove(Cell.CLASS_NAME.WALKABLE);
+            cell.element.classList.remove(Cell.CLASS_NAME.SHOOTABLE);
         }
         return this;
     };
