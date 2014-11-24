@@ -76,8 +76,8 @@ define(function (require) {
     Cell.prototype.getCenterPoint = function () {
         var boundingClientRect = this.element.getBoundingClientRect();
         return {
-            top: (boundingClientRect.top + boundingClientRect.bottom) / 2,
-            left: (boundingClientRect.left + boundingClientRect.right) / 2
+            top: window.scrollY + (boundingClientRect.top + boundingClientRect.bottom) / 2,
+            left: window.scrollX + (boundingClientRect.left + boundingClientRect.right) / 2
         };
     };
 
