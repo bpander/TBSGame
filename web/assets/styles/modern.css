@@ -1,0 +1,183 @@
+/* ---------------------------------------------------------------------
+ Modern Styles
+------------------------------------------------------------------------ */
+@-webkit-keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 3px 1px turquoise;
+    border-color: #999999; }
+
+  50% {
+    box-shadow: 0 0 15px 1px turquoise;
+    border-color: turquoise; } }
+
+/* ---------------------------------------------------------------------
+RESET CSS (thanks Eric Meyer)
+------------------------------------------------------------------------ */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font-weight: inherit;
+  font-style: inherit;
+  font-family: inherit;
+  vertical-align: baseline; }
+
+body {
+  line-height: 1; }
+
+ol, ul {
+  list-style: none; }
+
+blockquote, q {
+  quotes: none; }
+
+blockquote:before, blockquote:after, q:before, q:after {
+  content: '';
+  content: none; }
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0; }
+
+:focus {
+  outline: 0; }
+
+html {
+  overflow-y: scroll;
+  /* Always show a vertical scrollbar, even when there is no scrolling */ }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%; }
+
+/* ---------------------------------------------------------------------
+ HTML5 Element Reset
+------------------------------------------------------------------------ */
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, main {
+  display: block; }
+
+audio, canvas, video, progress, picture {
+  display: inline-block; }
+
+template {
+  display: none; }
+
+/* ---------------------------------------------------------------------
+ Form Reset Styles
+------------------------------------------------------------------------ */
+input[type="search"]::-webkit-search-cancel-button, input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-results-button, input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance: none; }
+
+input[type="search"] {
+  -webkit-appearance: none;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box; }
+
+textarea {
+  overflow: auto;
+  vertical-align: top;
+  resize: vertical; }
+
+::-moz-focus-inner {
+  border: 0;
+  padding: 0; }
+
+body {
+  background: #000000;
+  font-family: 'Roboto', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase; }
+
+button, input {
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit; }
+
+.board {
+  border: solid 5px #333333;
+  display: inline-block;
+  margin: 10px;
+  padding: 10px; }
+
+.grid {
+  display: table;
+  margin: -3px; }
+
+.grid-row {
+  display: table-row; }
+
+.grid-cell {
+  display: table-cell; }
+
+.grid-cell:after {
+  border: 1px solid #999999;
+  border-radius: 3px;
+  content: '';
+  display: block;
+  height: 50px;
+  margin: 3px;
+  transition: all 400ms ease-out;
+  width: 50px; }
+
+.grid-cell_activePiece:after {
+  -webkit-animation-name: pulse;
+  -webkit-animation-duration: 1500ms;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: ease-in-out; }
+
+.grid-cell_walkable:after {
+  transition-timing-function: 'cubic-bezier(0.175, 0.885, 0.320, 1)';
+  border-color: rgba(240, 240, 95, 0.8); }
+
+.mix-grid-cell_shootable:after {
+  border-color: rgba(95, 240, 95, 0.8); }
+
+.piece {
+  position: absolute;
+  -webkit-transform: translateY(-50%) translateX(-50%);
+  transform: translateY(-50%) translateX(-50%); }
+
+.piece_soldier {
+  border-radius: 50%;
+  height: 20px;
+  width: 20px; }
+
+.piece_tank {
+  height: 20px;
+  width: 20px; }
+
+.piece_scout {
+  border: solid 12px transparent;
+  border-top-width: 0;
+  border-bottom-width: 20px; }
+
+.ui {
+  background: rgba(255, 255, 255, 0.75);
+  bottom: 0;
+  display: table;
+  position: fixed;
+  width: 100%; }
+
+.ui-control {
+  display: table-cell;
+  padding: 10px;
+  vertical-align: middle; }
+
+.ui-control-button {
+  padding: 10px; }
+
+.ui-control-value {
+  font-size: 24px; }
+
+.mix-ui-control_left {
+  text-align: left; }
+
+.mix-ui-control_center {
+  text-align: center; }
+
+.mix-ui-control_right {
+  text-align: right; }

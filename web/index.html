@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport" content="width = device-width, initial-scale = 1, maximum-scale = 1.0" />
+
+    <title>Game</title>
+
+    <script src="assets/vendor/requirejs/require.js"></script>
+    <script src="assets/scripts/config.js"></script>
+
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto" />
+    <link rel="stylesheet" href="assets/styles/modern.css" />
+</head>
+<body>
+
+
+    <div id="js-game">
+    </div>
+
+
+    <script>
+
+        require.config({
+
+            baseUrl: 'assets/scripts'
+
+        });
+
+        require(['main']);
+    </script>
+</body>
+</html>
