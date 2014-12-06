@@ -9,9 +9,13 @@ define(function (require) {
 
         this.element = document.createElement('div');
 
+        this.G = Infinity;
+
         this.isOpen = true;
 
         this.isTested = false;
+
+        this.parent = null;
 
         this.position = null;
 
@@ -31,13 +35,13 @@ define(function (require) {
     };
 
     Cell.EVENT_NAME = {
-        MOVE_TO_REQUEST: 'cell:moveToRequest'
+        WALK_TO_REQUEST: 'cell:walkToRequest'
     };
 
 
     Cell._onClick = function (e) {
         if (this.element.classList.contains(Cell.CLASS_NAME.WALKABLE)) {
-            this.trigger(Cell.EVENT_NAME.MOVE_TO_REQUEST, [ this ]);
+            this.emit(Cell.EVENT_NAME.WALK_TO_REQUEST, this);
         }
     };
 
@@ -79,6 +83,18 @@ define(function (require) {
             top: window.scrollY + (boundingClientRect.top + boundingClientRect.bottom) / 2,
             left: window.scrollX + (boundingClientRect.left + boundingClientRect.right) / 2
         };
+    };
+
+
+    Cell.prototype.getGScoreTo = function (cell) {
+        return (this.position.row - cell.position.row === 0 || this.position.col - cell.position.col === 0) ? 10 : 14;
+    };
+
+
+    Cell.prototype.clearHeuristics = function () {
+        this.parent = null;
+        this.G = Infinity;
+        return this;
     };
 
 

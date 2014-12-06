@@ -2,6 +2,7 @@ define(function (require) {
     'use strict';
 
     var Cell = require('components/Cell');
+    var Collection = require('collections/Collection');
     var Position = require('models/Position');
 
 
@@ -104,13 +105,95 @@ define(function (require) {
     };
 
 
+    /**
+     * Calculates the shortest path between two grid cells using Dijkstra's algorithm
+     * 
+     * @param  {Cell}   cellStart   Starting cell
+     * @param  {Cell}   cellFinal   Goal cell
+     * @return {Cell[]} path        An array containing the cells from the starting cell to the final cell
+     */
     Grid.prototype.getPathBetween = function (cellStart, cellFinal) {
-        // http://www.policyalmanac.org/games/aStarTutorial.htm
-        // G = Distance traveled to get to this node (moving diagonal = 14, moving straight = 10)
-        // H = Manhattan distance to goal node: (rows away + columns away) * 10
-        // F = G + H
+        var i = 0;
+        var cellCurrent;
+        var path = [];
+        var openList = new Collection([ cellStart ]);
+        var closedList = new Collection();
+
+        cellStart.G = 0;
+
+        while (i++ < 10000) {
+            cellCurrent = openList.getModelWithLowest('G');
+            if (openList.models.length === 0 || cellCurrent === cellFinal) {
+                break;
+            }
+            openList.remove(cellCurrent);
+            closedList.add(cellCurrent);
+            this.getAdjacentCells(cellCurrent).forEach(function (cellAdjacent) {
+                if (cellAdjacent.isOpen === false || closedList.contains(cellAdjacent)) {
+                    return;
+                }
+                if (openList.contains(cellAdjacent)) {
+                    var gScoreOld = cellCurrent.G + cellAdjacent.getGScoreTo(cellCurrent);
+                    var gScoreNew = cellCurrent.parent.G + cellAdjacent.getGScoreTo(cellCurrent.parent);
+                    if (gScoreNew > gScoreOld) {
+                        cellAdjacent.parent = cellCurrent.parent;
+                        cellAdjacent.G = gScoreNew;
+                    }
+                    return;
+                }
+                openList.add(cellAdjacent);
+                cellAdjacent.parent = cellCurrent;
+                cellAdjacent.G = cellAdjacent.parent.G + cellAdjacent.getGScoreTo(cellCurrent);
+            });
+        }
+
+        path = [ cellFinal ];
+        cellCurrent = cellFinal;
+        while ((cellCurrent = cellCurrent.parent) !== null) {
+            path.unshift(cellCurrent);
+        }
+        this.clearHeuristics();
+
+        return path;
     };
 
+
+    Grid.prototype.getAdjacentCells = function (cell) {
+        var cellAdjacent;
+        var cells = [];
+        var i;
+        var j;
+        var col;
+        var row;
+        for (i = -1; i <= 1; i++) {
+            for (j = -1; j <= 1; j++) {
+                if (i === 0 && j === 0) {
+                    continue;
+                }
+                row = cell.position.row + i;
+                if (row < 0 || row >= this.rowCount) {
+                    continue;
+                }
+                col = cell.position.col + j;
+                if (col < 0 || col >= this.colCount) {
+                    continue;
+                }
+                cellAdjacent = this.getCellAt(new Position(row, col));
+                cells.push(cellAdjacent);
+            }
+        }
+        return cells;
+    };
+
+
+    Grid.prototype.clearHeuristics = function () {
+        var cell;
+        var cells = this.cellsFlattened;
+        var i = 0;
+        while ((cell = cells[i++]) !== undefined) {
+            cell.clearHeuristics();
+        }
+    };
 
     return Grid;
 });

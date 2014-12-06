@@ -29,8 +29,9 @@ define(function (require) {
 
         this.loop = this.loop.bind(this);
 
+        this._onPieceActionPointChange = Game._onPieceActionPointChange.bind(this);
+        this._onWalkToRequest = Game._onWalkToRequest.bind(this);
         this._onUISkipRequest = Game._onUISkipRequest.bind(this);
-        this._onMoveToRequest = Game._onMoveToRequest.bind(this);
 
         this.init();
     }
@@ -44,25 +45,28 @@ define(function (require) {
 
 
     Game._onUISkipRequest = function () {
-        this.activePiece.trigger(Piece.EVENT_NAME.FINISH);
+        this.activePiece.finish();
     };
 
 
-    Game._onMoveToRequest = function (cell) {
+    Game._onWalkToRequest = function (cell) {
         var piece = this.activePiece;
+        var self = this;
         piece.cell.deactivate();
         this.board.grid.reset();
-        piece.moveTo(cell).then(function() {
-            cell.activate();
-            // + If points left, activate cell and highlightWalkableArea
-            // + Else, trigger "finished"
+        piece.walkTo(cell).then(function () {
+            if (piece.actionPoints > 0) {
+                cell.activate();
+                self.highlightWalkableArea(piece);
+            } else {
+                piece.finish();
+            }
         });
     };
 
 
-    Game._onActionPointChange = function (e) {
-        var piece = e.target;
-        // + Update UI controls (guard and readout)
+    Game._onPieceActionPointChange = function (piece) {
+        this.ui.apReadout.setValue(piece.actionPoints);
     };
 
 
@@ -73,8 +77,8 @@ define(function (require) {
         // TODO: There's probably a better way to do this (putting padding below the grid to allow space for the fixed UI)
         this.element.style.paddingBottom = this.ui.element.getBoundingClientRect().height + 'px';
 
-        this.enable();
         this.setup();
+        this.enable();
         this.loop();
 
         return this;
@@ -83,8 +87,13 @@ define(function (require) {
 
     Game.prototype.enable = function () {
         this.ui.on(UI.EVENT_NAME.SKIP_REQUEST, this._onUISkipRequest);
+        this.players.forEach(function (player) {
+            player.pieces.forEach(function (piece) {
+                piece.on(Piece.EVENT_NAME.ACTION_POINT_CHANGE, this._onPieceActionPointChange);
+            }, this);
+        }, this);
         this.board.grid.cellsFlattened.forEach(function (cell) {
-            cell.on(Cell.EVENT_NAME.MOVE_TO_REQUEST, this._onMoveToRequest);
+            cell.on(Cell.EVENT_NAME.WALK_TO_REQUEST, this._onWalkToRequest);
         }, this);
         return this;
     };
