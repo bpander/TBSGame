@@ -2,6 +2,7 @@ define(function (require) {
     'use strict';
 
     var Board = require('components/Board');
+    var Bullet = require('components/Bullet');
     var Cell = require('components/Cell');
     var Player = require('models/Player');
     var Piece = require('pieces/Piece');
@@ -11,6 +12,7 @@ define(function (require) {
     var Tank = require('pieces/Tank');
     var UI = require('components/UI');
     var Volley = require('models/Volley');
+    require('velocity');
 
 
     function Game (element) {
@@ -41,6 +43,16 @@ define(function (require) {
     }
 
 
+    /**
+     * @property BULLET_SPEED
+     * @description Number of pixels bullets travel per second
+     * @static
+     * @const
+     * @type {Number}
+     */
+    Game.BULLET_SPEED = 1000;
+
+
     Game.pieces = [
         Tank,
         Scout,
@@ -54,26 +66,21 @@ define(function (require) {
 
 
     Game._onWalkToRequest = function (cell) {
-        var piece = this.activePiece;
         var self = this;
-        piece.cell.deactivate();
         this.board.grid.reset();
-        piece.walkTo(cell).then(function () {
-            if (piece.actionPoints > 0) {
-                cell.activate();
-                self.highlightWalkableArea(piece);
-                if (piece.actionPoints >= piece.shotCost) {
-                    self.highlightEnemiesInRange(piece);
-                }
-            } else {
-                piece.finish();
-            }
+        this.activePiece.cell.deactivate();
+        this.activePiece.walkTo(cell).then(function () {
+            self.checkActivePieceStatus();
         });
     };
 
 
     Game._onTargetRequest = function (cell) {
-        this.manageVolley(new Volley(this.activePiece, cell));
+        var self = this;
+        this.board.grid.reset();
+        this.manageVolley(new Volley(this.activePiece, cell)).then(function () {
+            self.checkActivePieceStatus();
+        });
     };
 
 
@@ -184,7 +191,7 @@ define(function (require) {
         var i_cell = 0;
         var cell;
         var moveCount = piece.actionPoints;
-        var numberOfStepsTakenWhereShootingIsStillPossible = piece.actionPoints - piece.shotCost;
+        var numberOfStepsTakenWhereShootingIsStillPossible = piece.actionPoints - piece.volleyCost;
         var frontierCells = [ piece.cell ];
         var frontierCellsNew;
         var steps = [];
@@ -236,12 +243,47 @@ define(function (require) {
 
 
     Game.prototype.manageVolley = function (volley) {
+        var bullet = new Bullet();
+        var distance;
+        var duration;
         var isSuccessful = volley.shoot();
-        console.log('isSuccessful', isSuccessful);
+        var positionInitial = volley.piece.cell.getCenterPoint();
+        var positionFinal = volley.targetCell.getCenterPoint();
+        var self = this;
+
+        bullet.$element.css(positionInitial);
+        $.Velocity.hook(bullet.element, 'rotateZ', volley.piece.cell.getAngleTo(volley.targetCell) + 'deg');
+        this.element.appendChild(bullet.element);
+
+        if (!isSuccessful) {
+            positionFinal.left -= 20 - (Math.round(Math.random()) * 40);
+            positionFinal.top -= 20 - (Math.round(Math.random()) * 40);
+        }
+
+        distance = volley.piece.cell.getPixelDistanceTo(volley.targetCell);
+        duration = distance / Game.BULLET_SPEED * 1000;
+        return new Promise(function (resolve) {
+            $.when(bullet.$element.velocity(positionFinal, { duration: duration, easing: 'linear' })).then(function () {
+                self.element.removeChild(bullet.element);
+                resolve();
+            });
+        });
     };
 
 
-
+    Game.prototype.checkActivePieceStatus = function () {
+        var piece = this.activePiece;
+        if (piece.actionPoints > 0) {
+            piece.cell.activate();
+            this.highlightWalkableArea(piece);
+            if (piece.actionPoints >= piece.volleyCost) {
+                this.highlightEnemiesInRange(piece);
+            }
+        } else {
+            piece.finish();
+        }
+        return this;
+    };
 
 
     return Game;

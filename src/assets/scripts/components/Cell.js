@@ -27,6 +27,9 @@ define(function (require) {
     Cell.prototype.constructor = Cell;
 
 
+    var DEGREES_IN_RADIANS = 180 / Math.PI;
+
+
     Cell.CLASS_NAME = {
         ACTIVE:     'grid-cell_activePiece',
         ELEMENT:    'grid-cell',
@@ -87,12 +90,26 @@ define(function (require) {
     };
 
 
+    Cell.prototype.getAngleTo = function (cell) {
+        var centerPointInitial = this.getCenterPoint();
+        var centerPointFinal = cell.getCenterPoint();
+        return Math.atan2(centerPointFinal.top - centerPointInitial.top, centerPointFinal.left - centerPointInitial.left) * DEGREES_IN_RADIANS;
+    };
+
+
     Cell.prototype.getCenterPoint = function () {
         var boundingClientRect = this.element.getBoundingClientRect();
         return {
             top: window.scrollY + (boundingClientRect.top + boundingClientRect.bottom) / 2,
             left: window.scrollX + (boundingClientRect.left + boundingClientRect.right) / 2
         };
+    };
+
+
+    Cell.prototype.getPixelDistanceTo = function (cell) {
+        var centerPointInitial = this.getCenterPoint();
+        var centerPointFinal = cell.getCenterPoint();
+        return Math.sqrt( Math.pow(centerPointFinal.left - centerPointInitial.left, 2) + Math.pow(centerPointFinal.top - centerPointInitial.top, 2) );
     };
 
 

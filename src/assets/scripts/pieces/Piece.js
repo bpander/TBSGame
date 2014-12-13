@@ -29,7 +29,7 @@ define(function (require) {
 
         this.range = 0;
 
-        this.shotCost = 0;
+        this.volleyCost = 0;
 
         this.startingActionPoints = 0;
 
@@ -109,6 +109,12 @@ define(function (require) {
                 translateY: '-50%'
             })).then(resolve);
         });
+    };
+
+
+    Piece.prototype.registerVolley = function () {
+        this.setActionPoints(this.actionPoints - this.volleyCost);
+        return this;
     };
 
 

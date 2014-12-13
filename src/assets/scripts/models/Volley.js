@@ -12,6 +12,7 @@ define(function (require) {
 
 
     Volley.prototype.shoot = function () {
+        this.piece.registerVolley();
         var percentOfRange = this.piece.cell.getNormalizedDistanceTo(this.targetCell) / this.piece.range;
         return Math.random() >= percentOfRange;
     };

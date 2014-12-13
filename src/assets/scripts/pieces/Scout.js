@@ -13,7 +13,7 @@ define(function (require) {
 
         this.range = 15;
 
-        this.shotCost = 3;
+        this.volleyCost = 3;
 
         this.startingActionPoints = 10;
 
