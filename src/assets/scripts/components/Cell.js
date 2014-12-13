@@ -9,9 +9,13 @@ define(function (require) {
 
         this.element = document.createElement('div');
 
+        this.G = Infinity;
+
         this.isOpen = true;
 
         this.isTested = false;
+
+        this.parent = null;
 
         this.position = null;
 
@@ -23,21 +27,28 @@ define(function (require) {
     Cell.prototype.constructor = Cell;
 
 
+    var DEGREES_IN_RADIANS = 180 / Math.PI;
+
+
     Cell.CLASS_NAME = {
         ACTIVE:     'grid-cell_activePiece',
         ELEMENT:    'grid-cell',
         SHOOTABLE:  'mix-grid-cell_shootable',
+        TARGETABLE: 'mix-grid-cell_targetable',
         WALKABLE:   'grid-cell_walkable'
     };
 
     Cell.EVENT_NAME = {
-        MOVE_TO_REQUEST: 'cell:moveToRequest'
+        WALK_TO_REQUEST: 'cell:walkToRequest',
+        TARGET_REQUEST:  'cell:targetRequest'
     };
 
 
     Cell._onClick = function (e) {
         if (this.element.classList.contains(Cell.CLASS_NAME.WALKABLE)) {
-            this.trigger(Cell.EVENT_NAME.MOVE_TO_REQUEST, [ this ]);
+            this.emit(Cell.EVENT_NAME.WALK_TO_REQUEST, this);
+        } else if (this.element.classList.contains(Cell.CLASS_NAME.TARGETABLE)) {
+            this.emit(Cell.EVENT_NAME.TARGET_REQUEST, this);
         }
     };
 
@@ -73,12 +84,49 @@ define(function (require) {
     };
 
 
+    Cell.prototype.makeTargetable = function () {
+        this.element.classList.add(Cell.CLASS_NAME.TARGETABLE);
+        return this;
+    };
+
+
+    Cell.prototype.getAngleTo = function (cell) {
+        var centerPointInitial = this.getCenterPoint();
+        var centerPointFinal = cell.getCenterPoint();
+        return Math.atan2(centerPointFinal.top - centerPointInitial.top, centerPointFinal.left - centerPointInitial.left) * DEGREES_IN_RADIANS;
+    };
+
+
     Cell.prototype.getCenterPoint = function () {
         var boundingClientRect = this.element.getBoundingClientRect();
         return {
             top: window.scrollY + (boundingClientRect.top + boundingClientRect.bottom) / 2,
             left: window.scrollX + (boundingClientRect.left + boundingClientRect.right) / 2
         };
+    };
+
+
+    Cell.prototype.getPixelDistanceTo = function (cell) {
+        var centerPointInitial = this.getCenterPoint();
+        var centerPointFinal = cell.getCenterPoint();
+        return Math.sqrt( Math.pow(centerPointFinal.left - centerPointInitial.left, 2) + Math.pow(centerPointFinal.top - centerPointInitial.top, 2) );
+    };
+
+
+    Cell.prototype.getGScoreTo = function (cell) {
+        return (this.position.row - cell.position.row === 0 || this.position.col - cell.position.col === 0) ? 10 : 14;
+    };
+
+
+    Cell.prototype.getNormalizedDistanceTo = function (cell) {
+        return Math.max(Math.abs(this.position.row - cell.position.row), Math.abs(this.position.col - cell.position.col));
+    };
+
+
+    Cell.prototype.clearHeuristics = function () {
+        this.parent = null;
+        this.G = Infinity;
+        return this;
     };
 
 

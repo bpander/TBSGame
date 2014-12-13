@@ -5,6 +5,7 @@ define(function (require) {
     var $ = require('jquery');
     var Cell = require('components/Cell');
     var EventEmitter = require('EventEmitter');
+    var Promise = require('bluebird');
 
 
     function Piece () {
@@ -14,6 +15,8 @@ define(function (require) {
 
         this.board = null;
 
+        this.cell = null;
+
         this.damage = 0;
 
         this.element = document.createElement('div');
@@ -22,11 +25,11 @@ define(function (require) {
 
         this.hitPoints = 0;
 
-        this.cell = null;
+        this.piece = null;
 
         this.range = 0;
 
-        this.shotCost = 0;
+        this.volleyCost = 0;
 
         this.startingActionPoints = 0;
 
@@ -37,7 +40,8 @@ define(function (require) {
 
 
     Piece.EVENT_NAME = {
-        FINISH: 'piece:finish'
+        FINISH:                 'piece:finish',
+        ACTION_POINT_CHANGE:    'piece:actionPointChange'
     };
 
 
@@ -49,6 +53,19 @@ define(function (require) {
 
     Piece.prototype.ready = function () {
         this.actionPoints = this.startingActionPoints;
+        return this;
+    };
+
+
+    Piece.prototype.finish = function () {
+        this.emit(Piece.EVENT_NAME.FINISH);
+        return this;
+    };
+
+
+    Piece.prototype.setActionPoints = function (actionPoints) {
+        this.actionPoints = actionPoints;
+        this.emit(Piece.EVENT_NAME.ACTION_POINT_CHANGE, this);
         return this;
     };
 
@@ -69,9 +86,11 @@ define(function (require) {
     Piece.prototype.setCell = function (cell) {
         if (this.cell instanceof Cell) {
             this.cell.isOpen = true;
+            this.cell.piece = null;
         }
         this.cell = cell;
         this.cell.isOpen = false;
+        this.cell.piece = this;
         return this;
     };
 
@@ -81,7 +100,6 @@ define(function (require) {
         var cellCenterPoint = cell.getCenterPoint();
         this.setCell(cell);
         return new Promise(function (resolve) {
-            // TODO: Eventually this will need A* pathfinding
             $.when(self.$element.velocity({
                 top: cellCenterPoint.top,
                 left: cellCenterPoint.left,
@@ -90,6 +108,27 @@ define(function (require) {
                 translateX: '-50%',
                 translateY: '-50%'
             })).then(resolve);
+        });
+    };
+
+
+    Piece.prototype.registerVolley = function () {
+        this.setActionPoints(this.actionPoints - this.volleyCost);
+        return this;
+    };
+
+
+    Piece.prototype.walkTo = function (cell) {
+        var current = Promise.resolve();
+        var path = this.board.grid.getPathBetween(this.cell, cell);
+        var self = this;
+        path.shift(); // Throw out the starting cell
+        return Promise.map(path, function (cell) {
+            current = current.then(function () {
+                self.setActionPoints(self.actionPoints - 1);
+                return self.moveTo(cell);
+            });
+            return current;
         });
     };
 

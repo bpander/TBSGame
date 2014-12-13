@@ -2,6 +2,7 @@ define(function (require) {
     'use strict';
 
     var Board = require('components/Board');
+    var Bullet = require('components/Bullet');
     var Cell = require('components/Cell');
     var Player = require('models/Player');
     var Piece = require('pieces/Piece');
@@ -10,6 +11,8 @@ define(function (require) {
     var Soldier = require('pieces/Soldier');
     var Tank = require('pieces/Tank');
     var UI = require('components/UI');
+    var Volley = require('models/Volley');
+    require('velocity');
 
 
     function Game (element) {
@@ -17,6 +20,8 @@ define(function (require) {
         this.element = element;
 
         this.activePiece = null;
+
+        this.activePlayer = null;
 
         this.board = new Board();
 
@@ -29,11 +34,23 @@ define(function (require) {
 
         this.loop = this.loop.bind(this);
 
+        this._onPieceActionPointChange = Game._onPieceActionPointChange.bind(this);
+        this._onTargetRequest = Game._onTargetRequest.bind(this);
+        this._onWalkToRequest = Game._onWalkToRequest.bind(this);
         this._onUISkipRequest = Game._onUISkipRequest.bind(this);
-        this._onMoveToRequest = Game._onMoveToRequest.bind(this);
 
         this.init();
     }
+
+
+    /**
+     * @property BULLET_SPEED
+     * @description Number of pixels bullets travel per second
+     * @static
+     * @const
+     * @type {Number}
+     */
+    Game.BULLET_SPEED = 1000;
 
 
     Game.pieces = [
@@ -44,25 +61,31 @@ define(function (require) {
 
 
     Game._onUISkipRequest = function () {
-        this.activePiece.trigger(Piece.EVENT_NAME.FINISH);
+        this.activePiece.finish();
     };
 
 
-    Game._onMoveToRequest = function (cell) {
-        var piece = this.activePiece;
-        piece.cell.deactivate();
+    Game._onWalkToRequest = function (cell) {
+        var self = this;
         this.board.grid.reset();
-        piece.moveTo(cell).then(function() {
-            cell.activate();
-            // + If points left, activate cell and highlightWalkableArea
-            // + Else, trigger "finished"
+        this.activePiece.cell.deactivate();
+        this.activePiece.walkTo(cell).then(function () {
+            self.checkActivePieceStatus();
         });
     };
 
 
-    Game._onActionPointChange = function (e) {
-        var piece = e.target;
-        // + Update UI controls (guard and readout)
+    Game._onTargetRequest = function (cell) {
+        var self = this;
+        this.board.grid.reset();
+        this.manageVolley(new Volley(this.activePiece, cell)).then(function () {
+            self.checkActivePieceStatus();
+        });
+    };
+
+
+    Game._onPieceActionPointChange = function (piece) {
+        this.ui.apReadout.setValue(piece.actionPoints);
     };
 
 
@@ -73,8 +96,8 @@ define(function (require) {
         // TODO: There's probably a better way to do this (putting padding below the grid to allow space for the fixed UI)
         this.element.style.paddingBottom = this.ui.element.getBoundingClientRect().height + 'px';
 
-        this.enable();
         this.setup();
+        this.enable();
         this.loop();
 
         return this;
@@ -83,8 +106,14 @@ define(function (require) {
 
     Game.prototype.enable = function () {
         this.ui.on(UI.EVENT_NAME.SKIP_REQUEST, this._onUISkipRequest);
+        this.players.forEach(function (player) {
+            player.pieces.forEach(function (piece) {
+                piece.on(Piece.EVENT_NAME.ACTION_POINT_CHANGE, this._onPieceActionPointChange);
+            }, this);
+        }, this);
         this.board.grid.cellsFlattened.forEach(function (cell) {
-            cell.on(Cell.EVENT_NAME.MOVE_TO_REQUEST, this._onMoveToRequest);
+            cell.on(Cell.EVENT_NAME.WALK_TO_REQUEST, this._onWalkToRequest);
+            cell.on(Cell.EVENT_NAME.TARGET_REQUEST, this._onTargetRequest);
         }, this);
         return this;
     };
@@ -110,6 +139,7 @@ define(function (require) {
     Game.prototype.playTurn = function (player) {
         var self = this;
         var current = Promise.resolve();
+        this.activePlayer = player;
         return Promise.map(player.pieces, function (piece) {
             current = current.then(function () {
                 return self.playPiece(piece);
@@ -128,9 +158,31 @@ define(function (require) {
         piece.ready();
         this.ui.apReadout.setValue(piece.actionPoints);
         this.highlightWalkableArea(piece);
+        this.highlightEnemiesInRange(piece);
         return new Promise(function (resolve) {
             piece.once(Piece.EVENT_NAME.FINISH, resolve);
         });
+    };
+
+
+    Game.prototype.highlightEnemiesInRange = function (piece) {
+        var i = 0;
+        var j = 0;
+        var enemyPiece;
+        var player;
+        var players = this.players;
+        while ((player = this.players[i++]) !== undefined) {
+            if (player === this.activePlayer) {
+                continue;
+            }
+            j = 0;
+            while ((enemyPiece = player.pieces[j++]) !== undefined) {
+                if (piece.cell.getNormalizedDistanceTo(enemyPiece.cell) < piece.range) {
+                    enemyPiece.cell.makeTargetable();
+                }
+            }
+        }
+        return this;
     };
 
 
@@ -139,7 +191,7 @@ define(function (require) {
         var i_cell = 0;
         var cell;
         var moveCount = piece.actionPoints;
-        var numberOfStepsTakenWhereShootingIsStillPossible = piece.actionPoints - piece.shotCost;
+        var numberOfStepsTakenWhereShootingIsStillPossible = piece.actionPoints - piece.volleyCost;
         var frontierCells = [ piece.cell ];
         var frontierCellsNew;
         var steps = [];
@@ -186,6 +238,50 @@ define(function (require) {
                 player.pieces.push(piece);
             }, this);
         }, this);
+        return this;
+    };
+
+
+    Game.prototype.manageVolley = function (volley) {
+        var bullet = new Bullet();
+        var distance;
+        var duration;
+        var isSuccessful = volley.shoot();
+        var positionInitial = volley.piece.cell.getCenterPoint();
+        var positionFinal = volley.targetCell.getCenterPoint();
+        var self = this;
+
+        bullet.$element.css(positionInitial);
+        $.Velocity.hook(bullet.element, 'rotateZ', volley.piece.cell.getAngleTo(volley.targetCell) + 'deg');
+        this.element.appendChild(bullet.element);
+
+        if (!isSuccessful) {
+            positionFinal.left -= 20 - (Math.round(Math.random()) * 40);
+            positionFinal.top -= 20 - (Math.round(Math.random()) * 40);
+        }
+
+        distance = volley.piece.cell.getPixelDistanceTo(volley.targetCell);
+        duration = distance / Game.BULLET_SPEED * 1000;
+        return new Promise(function (resolve) {
+            $.when(bullet.$element.velocity(positionFinal, { duration: duration, easing: 'linear' })).then(function () {
+                self.element.removeChild(bullet.element);
+                resolve();
+            });
+        });
+    };
+
+
+    Game.prototype.checkActivePieceStatus = function () {
+        var piece = this.activePiece;
+        if (piece.actionPoints > 0) {
+            piece.cell.activate();
+            this.highlightWalkableArea(piece);
+            if (piece.actionPoints >= piece.volleyCost) {
+                this.highlightEnemiesInRange(piece);
+            }
+        } else {
+            piece.finish();
+        }
         return this;
     };
 

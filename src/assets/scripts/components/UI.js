@@ -31,7 +31,7 @@ define(function (require) {
 
 
     UI._onSkipControlClick = function () {
-        this.trigger(UI.EVENT_NAME.SKIP_REQUEST);
+        this.emit(UI.EVENT_NAME.SKIP_REQUEST);
     };
 
 
