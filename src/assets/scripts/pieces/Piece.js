@@ -8,10 +8,8 @@ define(function (require) {
     var Promise = require('bluebird');
 
 
-    function Piece (player) {
+    function Piece () {
         EventEmitter.call(this);
-
-        this.player = player;
 
         this.actionPoints = 0;
 

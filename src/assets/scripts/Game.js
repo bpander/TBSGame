@@ -161,7 +161,7 @@ define(function (require) {
     Game.prototype.highlightEnemiesInRange = function (piece) {
         var i = 0;
         var j = 0;
-        var pieceA;
+        var enemyPiece;
         var player;
         var players = this.players;
         while ((player = this.players[i++]) !== undefined) {
@@ -169,9 +169,9 @@ define(function (require) {
                 continue;
             }
             j = 0;
-            while ((pieceA = player.pieces[j++]) !== undefined) {
-                if (piece.cell.getNormalizedDistanceTo(pieceA.cell) < piece.range) {
-                    pieceA.cell.makeTargetable();
+            while ((enemyPiece = player.pieces[j++]) !== undefined) {
+                if (piece.cell.getNormalizedDistanceTo(enemyPiece.cell) < piece.range) {
+                    enemyPiece.cell.makeTargetable();
                 }
             }
         }
