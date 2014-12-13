@@ -103,6 +103,15 @@ button, input {
   margin: 10px;
   padding: 10px; }
 
+.bullet {
+  background: #ffffff;
+  height: 4px;
+  margin-left: -5px;
+  margin-top: -2px;
+  position: absolute;
+  transform: translateX(-50%) translateY(-50%);
+  width: 10px; }
+
 .grid {
   display: table;
   margin: -3px; }
@@ -136,7 +145,11 @@ button, input {
 .mix-grid-cell_shootable:after {
   border-color: rgba(95, 240, 95, 0.8); }
 
+.mix-grid-cell_targetable:after {
+  border-color: rgba(255, 0, 0, 0.8); }
+
 .piece {
+  pointer-events: none;
   position: absolute;
   -webkit-transform: translateY(-50%) translateX(-50%);
   transform: translateY(-50%) translateX(-50%); }
