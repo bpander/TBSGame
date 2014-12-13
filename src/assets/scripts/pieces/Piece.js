@@ -8,12 +8,16 @@ define(function (require) {
     var Promise = require('bluebird');
 
 
-    function Piece () {
+    function Piece (player) {
         EventEmitter.call(this);
+
+        this.player = player;
 
         this.actionPoints = 0;
 
         this.board = null;
+
+        this.cell = null;
 
         this.damage = 0;
 
@@ -23,7 +27,7 @@ define(function (require) {
 
         this.hitPoints = 0;
 
-        this.cell = null;
+        this.piece = null;
 
         this.range = 0;
 
@@ -84,9 +88,11 @@ define(function (require) {
     Piece.prototype.setCell = function (cell) {
         if (this.cell instanceof Cell) {
             this.cell.isOpen = true;
+            this.cell.piece = null;
         }
         this.cell = cell;
         this.cell.isOpen = false;
+        this.cell.piece = this;
         return this;
     };
 

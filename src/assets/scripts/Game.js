@@ -10,6 +10,7 @@ define(function (require) {
     var Soldier = require('pieces/Soldier');
     var Tank = require('pieces/Tank');
     var UI = require('components/UI');
+    var Volley = require('models/Volley');
 
 
     function Game (element) {
@@ -17,6 +18,8 @@ define(function (require) {
         this.element = element;
 
         this.activePiece = null;
+
+        this.activePlayer = null;
 
         this.board = new Board();
 
@@ -30,6 +33,7 @@ define(function (require) {
         this.loop = this.loop.bind(this);
 
         this._onPieceActionPointChange = Game._onPieceActionPointChange.bind(this);
+        this._onTargetRequest = Game._onTargetRequest.bind(this);
         this._onWalkToRequest = Game._onWalkToRequest.bind(this);
         this._onUISkipRequest = Game._onUISkipRequest.bind(this);
 
@@ -58,10 +62,18 @@ define(function (require) {
             if (piece.actionPoints > 0) {
                 cell.activate();
                 self.highlightWalkableArea(piece);
+                if (piece.actionPoints >= piece.shotCost) {
+                    self.highlightEnemiesInRange(piece);
+                }
             } else {
                 piece.finish();
             }
         });
+    };
+
+
+    Game._onTargetRequest = function (cell) {
+        this.manageVolley(new Volley(this.activePiece, cell));
     };
 
 
@@ -94,6 +106,7 @@ define(function (require) {
         }, this);
         this.board.grid.cellsFlattened.forEach(function (cell) {
             cell.on(Cell.EVENT_NAME.WALK_TO_REQUEST, this._onWalkToRequest);
+            cell.on(Cell.EVENT_NAME.TARGET_REQUEST, this._onTargetRequest);
         }, this);
         return this;
     };
@@ -119,6 +132,7 @@ define(function (require) {
     Game.prototype.playTurn = function (player) {
         var self = this;
         var current = Promise.resolve();
+        this.activePlayer = player;
         return Promise.map(player.pieces, function (piece) {
             current = current.then(function () {
                 return self.playPiece(piece);
@@ -137,9 +151,31 @@ define(function (require) {
         piece.ready();
         this.ui.apReadout.setValue(piece.actionPoints);
         this.highlightWalkableArea(piece);
+        this.highlightEnemiesInRange(piece);
         return new Promise(function (resolve) {
             piece.once(Piece.EVENT_NAME.FINISH, resolve);
         });
+    };
+
+
+    Game.prototype.highlightEnemiesInRange = function (piece) {
+        var i = 0;
+        var j = 0;
+        var pieceA;
+        var player;
+        var players = this.players;
+        while ((player = this.players[i++]) !== undefined) {
+            if (player === this.activePlayer) {
+                continue;
+            }
+            j = 0;
+            while ((pieceA = player.pieces[j++]) !== undefined) {
+                if (piece.cell.getNormalizedDistanceTo(pieceA.cell) < piece.range) {
+                    pieceA.cell.makeTargetable();
+                }
+            }
+        }
+        return this;
     };
 
 
@@ -197,6 +233,15 @@ define(function (require) {
         }, this);
         return this;
     };
+
+
+    Game.prototype.manageVolley = function (volley) {
+        var isSuccessful = volley.shoot();
+        console.log('isSuccessful', isSuccessful);
+    };
+
+
+
 
 
     return Game;

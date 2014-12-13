@@ -31,17 +31,21 @@ define(function (require) {
         ACTIVE:     'grid-cell_activePiece',
         ELEMENT:    'grid-cell',
         SHOOTABLE:  'mix-grid-cell_shootable',
+        TARGETABLE: 'mix-grid-cell_targetable',
         WALKABLE:   'grid-cell_walkable'
     };
 
     Cell.EVENT_NAME = {
-        WALK_TO_REQUEST: 'cell:walkToRequest'
+        WALK_TO_REQUEST: 'cell:walkToRequest',
+        TARGET_REQUEST:  'cell:targetRequest'
     };
 
 
     Cell._onClick = function (e) {
         if (this.element.classList.contains(Cell.CLASS_NAME.WALKABLE)) {
             this.emit(Cell.EVENT_NAME.WALK_TO_REQUEST, this);
+        } else if (this.element.classList.contains(Cell.CLASS_NAME.TARGETABLE)) {
+            this.emit(Cell.EVENT_NAME.TARGET_REQUEST, this);
         }
     };
 
@@ -77,6 +81,12 @@ define(function (require) {
     };
 
 
+    Cell.prototype.makeTargetable = function () {
+        this.element.classList.add(Cell.CLASS_NAME.TARGETABLE);
+        return this;
+    };
+
+
     Cell.prototype.getCenterPoint = function () {
         var boundingClientRect = this.element.getBoundingClientRect();
         return {
@@ -88,6 +98,11 @@ define(function (require) {
 
     Cell.prototype.getGScoreTo = function (cell) {
         return (this.position.row - cell.position.row === 0 || this.position.col - cell.position.col === 0) ? 10 : 14;
+    };
+
+
+    Cell.prototype.getNormalizedDistanceTo = function (cell) {
+        return Math.max(Math.abs(this.position.row - cell.position.row), Math.abs(this.position.col - cell.position.col));
     };
 
 

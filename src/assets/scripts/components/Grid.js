@@ -100,6 +100,7 @@ define(function (require) {
             cell.isTested = false;
             cell.element.classList.remove(Cell.CLASS_NAME.WALKABLE);
             cell.element.classList.remove(Cell.CLASS_NAME.SHOOTABLE);
+            cell.element.classList.remove(Cell.CLASS_NAME.TARGETABLE);
         }
         return this;
     };
