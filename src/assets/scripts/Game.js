@@ -78,7 +78,7 @@ define(function (require) {
     Game._onTargetRequest = function (cell) {
         var self = this;
         this.board.grid.reset();
-        this.manageVolley(new Volley(this.activePiece, cell)).then(function () {
+        this.manageVolley(new Volley(this, this.activePiece, cell)).then(function () {
             self.checkActivePieceStatus();
         });
     };

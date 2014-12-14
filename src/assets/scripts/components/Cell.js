@@ -27,9 +27,6 @@ define(function (require) {
     Cell.prototype.constructor = Cell;
 
 
-    var DEGREES_IN_RADIANS = 180 / Math.PI;
-
-
     Cell.CLASS_NAME = {
         ACTIVE:     'grid-cell_activePiece',
         ELEMENT:    'grid-cell',
@@ -93,7 +90,7 @@ define(function (require) {
     Cell.prototype.getAngleTo = function (cell) {
         var centerPointInitial = this.getCenterPoint();
         var centerPointFinal = cell.getCenterPoint();
-        return Math.atan2(centerPointFinal.top - centerPointInitial.top, centerPointFinal.left - centerPointInitial.left) * DEGREES_IN_RADIANS;
+        return Math.atan2((centerPointFinal.top * -1) - (centerPointInitial.top * -1), centerPointFinal.left - centerPointInitial.left);
     };
 
 
